@@ -16,7 +16,7 @@ Version: \tab 1.0\cr
 Date: \tab 2012-11-13\cr
 License: \tab GPL (>=2.0)\cr
 LazyLoad: \tab yes\cr
-Depends: \tab methods, nlme, graphics, snowfall\cr
+Depends: \tab methods, nlme, graphics, parallel\cr
 }
 }
 \author{

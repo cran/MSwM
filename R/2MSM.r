@@ -1251,15 +1251,15 @@ setMethod(f="iteraEM",signature=c("MSM.linear","data.frame","ANY"),definition=.M
 		parallelization=control$parallelization
       
   	if(parallelization){
-  		  if(!require(snowfall)) {
-  		    stop("package 'snowfall' must be installed and loaded, otherwise parallelization cannot be performed")
+  		  if(!require(parallel)) {
+  		    stop("package 'parallel' must be installed and loaded, otherwise parallelization cannot be performed")
   		  }else{
-  		    #suppressMessages(require("snowfall"))
-  		    if(!sfIsRunning()) suppressMessages(sfInit(parallel=TRUE,cpus=parallel::detectCores(logical=T)))
+  		    mc=detectCores(logical = TRUE)
+  		    cl <- makeCluster(mc)
+  		    #clusterExport(cl,c("dades","object","control","maxiterInner"))
   	 }
   	}
-        
-		
+	
 		paralel=function(id){
 			x<-object
 			smoTransMat=lapply(vector("list",nrow(x@Fit@filtProb)),function(el){
@@ -1274,10 +1274,9 @@ setMethod(f="iteraEM",signature=c("MSM.linear","data.frame","ANY"),definition=.M
 			return(list(Minim=x@Fit@logLikel,inismoTransMat=x@Fit@smoTransMat,inismoTransMatrob=x@Fit@smoProb))
 		}
   	if(parallelization){
-  	     #suppressMessages(sfLibrary("MSwM", character.only=TRUE))
-  	     suppressMessages(sfExport("dades","object","control","maxiterInner"))
-  		    paralRes=sfLapply(c(1:maxiterOuter),paralel)
-          suppressMessages(sfStop())
+  	      junk <- clusterEvalQ(cl, library(MSwM))
+					paralRes=parLapply(cl, c(1:maxiterOuter),paralel)
+          stopCluster(cl)
   		  } else {
   		    paralRes=lapply(c(1:maxiterOuter),paralel)
   		  }
