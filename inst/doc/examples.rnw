@@ -1,0 +1,215 @@
+%\VignetteIndexEntry{example}
+%\VignetteKeywords{LaTeX,HTML,table}
+%\VignettePackage{MSwM}
+
+%**************************************************************************
+\documentclass[a4paper]{article}
+%\documentclass[12pt]{article}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{Sweave}
+\usepackage{float}
+
+\pagestyle{empty}
+\setlength{\baselineskip}{1.25em}
+\setlength{\parskip}{0.5em}
+%\setlength{\parindent}{0.0em}
+
+\title{MSwM examples}
+\author{Jose A. Sanchez-Espigares, Alberto Lopez-Moreno\\
+Dept. of Statistics and Operations Research\\
+UPC-BarcelonaTech}
+
+\begin{document}
+\SweaveOpts{engine=R,eps=FALSE,pdf=TRUE,strip.white=true,keep.source=TRUE}
+%\SweaveOpts{include=FALSE}
+\maketitle
+\begin{abstract}
+  Two examples are described to illustrate the use of the \texttt{MSwM} package. First, a simulated dataset is modeled in detail.
+  Next, Markov Switching Models are fitted to a real dataset with a discrete response variable. The main methods and graphical representations are used to validate different approaches to model these
+  datasets. 
+\end{abstract}
+
+<<preliminaries,echo=FALSE,print=FALSE>>=
+library(MSwM)
+set.seed(2341)
+@
+\section{Simulated Example}
+The \texttt{example} data is a simulated data set to show how \texttt{msmFit} can detect the presence of two different regimes: one in which the response variable is highly correlated 
+and other in which the response only depends on an exogenous variable \texttt{x}. The autocorrelated observations are in the intervals 1 to 100, 151 to 180 and 251 to 300. The real models for each regime are:
+\[
+\begin{array}{ll}
+    y_{t}=\left\{
+      \begin{array}{lll}
+        8+2x_{t}+\varepsilon^{(1)}_{t} & \epsilon^{(1)}_{t}\sim{N(0,1)} & t =101:150,181:250 \\
+        1+0.9y_{t-1}+\varepsilon^{(2)}_{t} & \epsilon^{(2)}_{t}\sim{N(0,0.5)} & t =1:100,151:180,251:300 
+      \end{array}
+    \right.
+\end{array}
+\]
+<<echo=TRUE>>=
+data(example)
+@
+\begin{figure}[ht]
+\centering
+<<echo=TRUE,fig=TRUE>>=
+plot(ts(example))
+@ 
+\caption{Simulated data. The \texttt{y} variable is the response variable and there are two periods in which this depends on the \texttt{x} covariate}
+\label{fig1.1}
+\end{figure}
+The plot in Fig.\ref{fig1.1} shows that in the intervals where does not exist autocorrelation the response variable \texttt{y} has a similar behaviour as the covariant \texttt{x}.
+A linear model is fitted to study how the covariate \texttt{x} explains the variable response \texttt{y}.
+<<echo=TRUE>>=
+mod=lm(y~x,example)
+summary(mod)
+@ 
+The covariate is really significant but the data behaviour is very bad explained by the model. 
+The plot of the linear model residuals in Fig.\ref{fig1.1} indicates that their autocorrelation is significant.
+<<fig1_3,include=F,fig=true,echo=false>>=
+qqnorm(resid(mod))
+qqline(resid(mod))
+@
+<<fig1_4,include=F,fig=true,echo=false>>=
+acf(resid(mod))
+@
+\begin{figure}[ht]
+\includegraphics[width=0.47\linewidth]{examples-fig1_3}
+\hfill
+\includegraphics[width=0.47\linewidth]{examples-fig1_4}
+  \caption{Normal Probability plot and Autocorrelation Function of the residuals from the linear model}
+  \label{fig1_3_4}
+\end{figure}
+The diagnostics plots for the residuals (Fig.\ref{fig1_3_4}) confirm that they does not seem to be white noise and that they have autocorrelation.
+Next, a Autoregressive Markov Switching Model (MSM-AR) is fitted to the data. The order for the autoregressive part is set to one. In order to indicate that all the parameters can be different in both periods, 
+the switching parameter (\texttt{sw}) is set to a vector with four components with value equal to TRUE. The last value when fitting a linear model is referred to the residual standard deviation.
+There are some options to control the estimation process, like a logical parameter to indicate whether parallelization of the process is done or not.
+
+<<echo=TRUE>>=
+mod.mswm=msmFit(mod,k=2,p=1,sw=c(T,T,T,T),control=list(parallel=F))
+summary(mod.mswm)
+@
+The model \texttt{mod.mswm} has a regime where the covariant \texttt{x} is very significant and in the other regime the autocorrelation variable 
+is very significant too. In both, the R-squared have high values. Finally, the transition probabilities matrix has high values 
+which indicate that is difficult to change from on regime to the other.
+\begin{figure}[ht]
+\centering
+<<echo=false,fig=true>>=
+plot(mod.mswm)
+@
+\caption{Residuals form the Autoregressive MSM model}
+\label{fig1.5}
+\end{figure}
+The model detect perfectly the periods of each state.
+<<fig1_6,include=F,fig=true,echo=false>>=
+plotDiag(mod.mswm,which=2)
+@
+<<fig1_7,include=F,fig=true,echo=false>>=
+plotDiag(mod.mswm,which=3)
+@
+\begin{figure}[ht]
+\includegraphics[width=0.47\linewidth]{examples-fig1_6}
+\hfill
+\includegraphics[width=0.47\linewidth]{examples-fig1_7}
+  \caption{Normal Probability plot and Autocorrelation Function of the residuals from the Complete MSwM model. They are obtained by using the \texttt{plotDiag} method}
+  \label{fig1_6_7}
+\end{figure}
+The residuals look like to be white noise and they fit to the Normal Distribution. Moreover, the autocorrelation has disappeared.
+<<pp1m3,include=F,fig=true,echo=true>>=
+   plotProb(mod.mswm,which=1)
+@
+\begin{figure}[H]
+\centering
+\includegraphics{examples-pp1m3}
+  \caption{Filtered and Smoothed Probabilities for both regimes in the MSM-AR model}
+  \label{fig1.8}
+\end{figure}
+<<pp2m3,include=F,fig=true,echo=true>>=
+   plotProb(mod.mswm,which=2)
+@
+\begin{figure}[H]
+\centering
+\includegraphics[page=2]{examples-pp2m3}
+  \caption{Response variable indicating which observations are associated to regime 1}
+  \label{fig1.9}
+\end{figure}
+The graphics show that the periods for each regime have been detected perfectly.
+<<pp3m3,include=F,fig=true,echo=true>>=
+   plotReg(mod.mswm,expl="x")
+@
+\begin{figure}[H]
+\centering
+\includegraphics[page=2]{examples-pp3m3}
+  \caption{Relationship between x and y locating the two regimes}
+  \label{fig1.10}
+\end{figure}
+
+\section{Daily Traffic Casualties by car accidents in Spain}
+
+The \texttt{traffic} data (Fig.\ref{fig2.1}) contains the daily number of deaths in traffic accidents in Spain during the year 2010, the average daily temperature and
+the daily sum of precipitations. The interest of this data is to study the relation between the number of deaths with the climate conditions.
+We illustrate the use of a Generalized Markov Switching Model in this case because there exists a different behaviour between the variables during weekends and working days.
+To avoid a long example, the explanations of how the functions work and repeated results are skipped.
+
+\begin{figure}[ht]
+\centering
+<<echo=false,fig=TRUE>>=
+data(traffic)
+plot(ts(traffic[2:4]),main="Traffic")
+@
+  \caption{Traffic data: Daily traffic casualties in Spain and climate variables}
+  \label{fig2.1}
+\end{figure}
+
+In this example, the response variable is a counting variable. For this reason we fit a Poisson Generalized Linear Model.
+<<echo=TRUE>>=
+model=glm(NDead~Temp+Prec,traffic,family="poisson")
+summary(model)
+@
+In the next step, the Markov Switching Model is fitted using \texttt{msmFit}. To fit a Generalized Markov Switching Model, the family parameter has to be included.
+Moreover, the glm's don't have the standard deviation parameter and, because of this, the \texttt{sw} parameter doesn't contain its switching parameter.
+
+<<echo=TRUE>>=
+m1=msmFit(model,k=2,sw=c(T,T,T),family="poisson")
+summary(m1)
+@
+Both states have significant covariates, but the precipitation covariate is only significant in one of the two.
+<<echo=TRUE>>=
+intervals(m1)
+@
+\begin{figure}[ht]
+\centering
+<<echo=false,fig=true>>=
+plot(m1)
+@
+\caption{Residuals form the Autoregressive MSM model}
+\label{fig3.2}
+\end{figure}
+The Pearson residuals from Fig. \ref{fig3.2} are calculated from an object of class 'MSM.glm' because the model is an extension of a General Linear Model. 
+The residuals have the classical structure of white noise.   
+<<fig2_3,include=F,fig=true,echo=false>>=
+plotDiag(m1,which=2)
+@
+<<fig2_4,include=F,fig=true,echo=false>>=
+plotDiag(m1,which=3)
+@
+\begin{figure}[ht]
+\includegraphics[width=0.47\linewidth]{examples-fig2_3}
+\hfill
+\includegraphics[width=0.47\linewidth]{examples-fig2_4}
+  \caption{Normal Probability plot and Autocorrelation Function of the residuals from the Autoregressive MSwM model. They are obtained by using the \texttt{plotDiag} method}
+  \label{fig2_3_4}
+\end{figure}
+The residuals aren't autocorrelated but they don't fit very well to a Normal Distribution. However, normality of the Pearson residuals is not a critical condition for generalized linear model validation.
+
+<<pp1m1,include=F,fig=true,echo=true>>=
+   plotProb(m1,which=2)
+@
+\begin{figure}[H]
+\centering
+\includegraphics[page=2]{examples-pp1m1}
+  \caption{Response variable indicating which observations are associated to regime 1}
+  \label{fig2.6}
+\end{figure}
+Using the function \texttt{plotProb} we can see how the regimes are distributed in shorts periods because the bigger one contains basically working days.
+\end{document}

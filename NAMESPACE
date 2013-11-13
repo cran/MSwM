@@ -1,0 +1,28 @@
+import(
+	methods,
+	nlme,
+	graphics,
+	snowfall
+)
+
+exportMethods(
+    "msmFit",
+    "msmResid",
+    "plot",
+    "plotDiag",
+    "plotProb",
+    "plotReg",
+    "summary"
+)
+exportClasses(
+     "MSM.glm",
+     "MSM.lm",
+     "MSM.fitted" 
+)
+
+export(
+	"AIC.MSM.lm",
+	"AIC.MSM.glm",
+	"intervals.MSM.lm",
+	"intervals.MSM.glm"
+	)
