@@ -622,8 +622,8 @@ setMethod(f="plot",signature=c("MSM.linear","missing"),definition=.MSM.plot)
 			stop("You must write numbers.")
 		}
 	}
-	a=x["k"]/3
-	if((a-as.integer(a))*10>0) a=as.integer(a)+1
+  oldpar=par()
+	a=ceiling(x["k"]/3)
 	aux1=1:a
 	aux2=matrix(NA,nrow=x["k"],ncol=1)
 	aux2[,1]=apply(as.matrix(1:x["k"]),1,function(i){
@@ -640,10 +640,7 @@ setMethod(f="plot",signature=c("MSM.linear","missing"),definition=.MSM.plot)
 		for (i in 1:x["k"]){		
 			if(aux2[i,1]){
 				if(i>1){
-					try(ifelse(test=as.logical(Sys.info()["sysname"] == "Windows"),win.graph(),X11()),silent=T)
 					if(cont<length(aux1)){
-						print(i)
-						print(length(aux1))
 						par(omi=c(0.1,0.1,0.1,0.5))
 						par(mfrow=c(3,1))
 						cont=cont+1
@@ -674,9 +671,7 @@ setMethod(f="plot",signature=c("MSM.linear","missing"),definition=.MSM.plot)
 		aux=which[which>1]-1
 		z=x["model"]$model[1]	
 		apply(as.matrix(1:length(aux)),1,function(i){
-				if (length(which)!=1){ try(ifelse(test=as.logical(Sys.info()["sysname"] == "Windows"),win.graph(),X11()),silent=T)}
 				a=layout(matrix(c(1,1,1,2),ncol=1,nrow=4),TRUE)
-				layout.show(a)	
 				y=x["Fit"]["smoProb"][-1,aux[i]]
 				par(omi=c(0.1,0.1,0.1,0.5))
 				par(las=1,yaxt="n")
@@ -692,6 +687,7 @@ setMethod(f="plot",signature=c("MSM.linear","missing"),definition=.MSM.plot)
 			}
 		)
 	}
+  par(mfrow=c(1,1))
 	return(invisible())
 }
 setMethod(f="plotProb",signature=c("MSM.linear","ANY"),definition=.MSM.plotProb)
@@ -714,9 +710,7 @@ setMethod(f="plotProb",signature=c("MSM.linear","ANY"),definition=.MSM.plotProb)
 	z=x["model"]$model[1]
 	apply(as.matrix(1:length(regime)),1,function(j){
 		apply(as.matrix(1:length(x["model"]$model[-1])),1,function(i){
-				try(ifelse(test=as.logical(Sys.info()["sysname"] == "Windows"),win.graph(),X11()),silent=T)
 				a=layout(matrix(c(1,2,1,2),ncol=1,nrow=2),TRUE)
-				layout.show(a)	
 				y=x["Fit"]["smoProb"][-1,regime[j]]
 				v=x["model"]$model[i+1]
 				par(omi=c(0.1,0.01,0.1,0.1))
@@ -734,6 +728,7 @@ setMethod(f="plotProb",signature=c("MSM.linear","ANY"),definition=.MSM.plotProb)
 			)
 		}
 	)
+	par(mfrow=c(1,1))
 	return(invisible())
 }
 setMethod(f="plotReg",signature=c("MSM.linear","missing","ANY"),definition=.MSM.larg.plotReg)
@@ -753,9 +748,7 @@ setMethod(f="plotReg",signature=c("MSM.linear","missing","ANY"),definition=.MSM.
 	z=x["model"]$model[1]
 	apply(as.matrix(1:length(regime)),1,function(j){
 		apply(as.matrix(1:length(expl)),1,function(i){
-				if ((length(expl)!=1)|(length(regime)!=1)) win.graph()
 				a=layout(matrix(c(1,2,1,2),ncol=1,nrow=2),TRUE)
-				layout.show(a)	
 				y=x["Fit"]["smoProb"][-1,regime[j]]
 				v=x["model"]$model[expl[i]]
 				par(omi=c(0.1,0.1,0.1,0.1))
@@ -773,6 +766,7 @@ setMethod(f="plotReg",signature=c("MSM.linear","missing","ANY"),definition=.MSM.
 			)
 		}
 	)
+	par(mfrow=c(1,1))
 	return(invisible())
 }
 setMethod(f="plotReg",signature=c("MSM.linear","character","ANY"),definition=.MSM.sma.plotReg)
@@ -792,18 +786,15 @@ setMethod(f="plotReg",signature=c("MSM.linear","character","ANY"),definition=.MS
 	}
 	residPooled=apply(x["Fit"]["error"]*x["Fit"]["smoProb"][-1,],1,sum)
 	if(any(which==1)){	
-		if (length(which)!=1){try(ifelse(test=as.logical(Sys.info()["sysname"] == "Windows"),win.graph(),X11()),silent=T)}
 		ts.plot(residPooled,main="Pooled residuals")
 		abline(h=0)
 		abline(h=c(-3*sd(residPooled),3*sd(residPooled)),lty=3,col=4)
 	}
 	if(any(which==2)){
-		if (length(which)!=1){try(ifelse(test=as.logical(Sys.info()["sysname"] == "Windows"),win.graph(),X11()),silent=T)}
 		qqnorm(residPooled,main="Normal Q-Q Plot Pooled Residuals")
 		qqline(residPooled,col=2,lwd=2)
 	}
 	if(any(which==3)){
-		if (length(which)!=1){try(ifelse(test=as.logical(Sys.info()["sysname"] == "Windows"),win.graph(),X11()),silent=T)}
 		par(mfrow=c(2,2))
 		acf(residPooled,ylim=c(-1,1),main="ACF of Residuals")
 		pacf(residPooled,ylim=c(-1,1),main="PACF of Residuals")
@@ -833,18 +824,15 @@ setMethod(f="plotDiag",signature=c("MSM.linear","missing","ANY"),definition=.MSM
 	}
 	apply(as.matrix(aux),1,function(i){
 			if(any(which==1)){
-				try(ifelse(test=as.logical(Sys.info()["sysname"] == "Windows"),win.graph(),X11()),silent=T)
 				ts.plot(x["Fit"]["error"][,i],main=paste("Regime ",i,sep=""),ylab="Residuals")
 				abline(h=0)
 				abline(h=c(-3*sd(x["Fit"]["error"][,i]),3*sd(x["Fit"]["error"][,i])),lty=3,col=4)
 			}
 			if(any(which==2)){
-				try(ifelse(test=as.logical(Sys.info()["sysname"] == "Windows"),win.graph(),X11()),silent=T)
 				qqnorm(x["Fit"]["error"][,i],main=paste("Normal Q-Q Plot Regime ",i,sep=""))
 				qqline(x["Fit"]["error"][,i],col=2,lwd=2)
 			}
 			if(any(which==3)){			
-				try(ifelse(test=as.logical(Sys.info()["sysname"] == "Windows"),win.graph(),X11()),silent=T)
 				par(mfrow=c(2,2))
 				acf(x["Fit"]["error"][,i],ylim=c(-1,1),main=paste("ACF of Residuals. Reg: ",i,sep=""))
 				pacf(x["Fit"]["error"][,i],ylim=c(-1,1),main=paste("PACF of Residuals. Reg: ",i,sep=""))
@@ -1251,13 +1239,9 @@ setMethod(f="iteraEM",signature=c("MSM.linear","data.frame","ANY"),definition=.M
 		parallelization=control$parallelization
       
   	if(parallelization){
-  		  if(!require(parallel)) {
-  		    stop("package 'parallel' must be installed and loaded, otherwise parallelization cannot be performed")
-  		  }else{
   		    mc=detectCores(logical = TRUE)
   		    cl <- makeCluster(mc)
   		    #clusterExport(cl,c("dades","object","control","maxiterInner"))
-  	 }
   	}
 	
 		paralel=function(id){
