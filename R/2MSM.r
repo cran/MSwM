@@ -31,7 +31,7 @@ setMethod(
 	f="[",
 	signature=c("MSM.fitted","character","missing","missing"),
 	def = function(x,i,j,drop){
-		switch(EXP=i,
+		switch(EXPR=i,
 			CondMean	= return(x@CondMean),
 			error		= return(x@error),
 			Likel 	= return(x@Likel),
@@ -358,7 +358,7 @@ setMethod(
 	f="[",
 	signature=c("MSM.lm","character","missing","missing"),
 	def = function(x,i,j,drop){
-		switch(EXP=i,
+		switch(EXPR=i,
 			call = return(x@call),
 			model = return(x@model),
 			k = return(x@k),
@@ -381,7 +381,7 @@ setMethod(
 	f="[",
 	signature=c("MSM.glm","character","missing","missing"),
 	def = function(x,i,j,drop){
-		switch(EXP=i,
+		switch(EXPR=i,
 			call = return(x@call),
 			model = return(x@model),
 			k = return(x@k),

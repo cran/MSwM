@@ -5,6 +5,18 @@ import(
 	parallel
 )
 
+importFrom("stats", "acf", "as.formula", "coef", "dbinom", "dgamma",
+             "dnorm", "dpois", "glm", "lm", "model.matrix", "pacf",
+             "pnorm", "printCoefmat", "qnorm", "qqline", "qqnorm",
+             "quantile", "resid", "runif", "sd", "ts", "ts.plot",
+             "update", "weighted.residuals")
+importFrom("utils", "tail")
+
+S3method(AIC,MSM.lm)
+S3method(intervals,MSM.lm)
+S3method(AIC,MSM.glm)
+S3method(intervals,MSM.glm)
+
 exportMethods(
     "msmFit",
     "msmResid",
