@@ -86,7 +86,7 @@ the switching parameter (\texttt{sw}) is set to a vector with four components wi
 There are some options to control the estimation process, like a logical parameter to indicate whether parallelization of the process is done or not.
 
 <<echo=TRUE>>=
-mod.mswm=msmFit(mod,k=2,p=1,sw=c(T,T,T,T),control=list(parallel=F))
+mod.mswm=msmFit(mod,k=2,p=1,sw=c(TRUE,TRUE,TRUE,TRUE),control=list(parallel=FALSE))
 summary(mod.mswm)
 @
 The model \texttt{mod.mswm} has a regime where the covariant \texttt{x} is very significant and in the other regime the autocorrelation variable 
@@ -170,7 +170,7 @@ In the next step, the Markov Switching Model is fitted using \texttt{msmFit}. To
 Moreover, the glm's don't have the standard deviation parameter and, because of this, the \texttt{sw} parameter doesn't contain its switching parameter.
 
 <<echo=TRUE>>=
-m1=msmFit(model,k=2,sw=c(T,T,T),family="poisson",control=list(parallel=F))
+m1=msmFit(model,k=2,sw=c(TRUE,TRUE,TRUE),family="poisson",control=list(parallel=FALSE))
 summary(m1)
 @
 Both states have significant covariates, but the precipitation covariate is only significant in one of the two.

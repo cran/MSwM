@@ -12,12 +12,11 @@ importFrom("stats", "acf", "as.formula", "coef", "dbinom", "dgamma",
              "update", "weighted.residuals")
 importFrom("utils", "tail")
 
-S3method(AIC,MSM.lm)
-S3method(intervals,MSM.lm)
-S3method(AIC,MSM.glm)
-S3method(intervals,MSM.glm)
+importFrom("nlme", "intervals")
 
 exportMethods(
+		"AIC",
+		"intervals",
     "msmFit",
     "msmResid",
     "plot",
@@ -31,10 +30,3 @@ exportClasses(
      "MSM.lm",
      "MSM.fitted" 
 )
-
-export(
-	"AIC.MSM.lm",
-	"AIC.MSM.glm",
-	"intervals.MSM.lm",
-	"intervals.MSM.glm"
-	)

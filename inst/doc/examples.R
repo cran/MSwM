@@ -42,7 +42,7 @@ acf(resid(mod))
 ###################################################
 ### code chunk number 7: examples.rnw:88-90
 ###################################################
-mod.mswm=msmFit(mod,k=2,p=1,sw=c(T,T,T,T),control=list(parallel=F))
+mod.mswm=msmFit(mod,k=2,p=1,sw=c(TRUE,TRUE,TRUE,TRUE),control=list(parallel=FALSE))
 summary(mod.mswm)
 
 
@@ -99,7 +99,7 @@ summary(model)
 ###################################################
 ### code chunk number 16: examples.rnw:172-174
 ###################################################
-m1=msmFit(model,k=2,sw=c(T,T,T),family="poisson",control=list(parallel=F))
+m1=msmFit(model,k=2,sw=c(TRUE,TRUE,TRUE),family="poisson",control=list(parallel=FALSE))
 summary(m1)
 
 

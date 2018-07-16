@@ -21,3 +21,4 @@ setGeneric("em",function(object,control){standardGeneric("em")})
 
 setGeneric("hessian",function(object){standardGeneric("hessian")})
 
+setGeneric("intervals")

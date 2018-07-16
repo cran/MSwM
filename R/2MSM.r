@@ -890,7 +890,7 @@ setMethod(f="msmResid",signature=c("MSM.glm","missing"),definition=.MSM.glm.sma.
 setMethod(f="msmResid",signature=c("MSM.glm","ANY"),definition=.MSM.glm.larg.msmResid)
 
 
-AIC.MSM.lm <-
+.AIC.MSM.lm <-
   
   function(object, ..., k=2)
 {
@@ -898,7 +898,9 @@ AIC.MSM.lm <-
 	np=object["k"]*sum(swi)+sum(!swi)
 	return(2*object["Fit"]["logLikel"]+k*np)
 }
-AIC.MSM.glm <-
+setMethod(f="AIC",signature=c("MSM.lm"),definition=.AIC.MSM.lm)
+
+.AIC.MSM.glm <-
   
   function(object, ..., k=2)
 {
@@ -906,12 +908,9 @@ AIC.MSM.glm <-
 	np=object["k"]*sum(swi)+sum(!swi)
 	return(2*object["Fit"]["logLikel"]+k*np)
 }
+setMethod(f="AIC",signature=c("MSM.glm"),definition=.AIC.MSM.glm)
 
-AIC <-
-  ## Return the object's value of the Bayesian Information Criterion
-  function(object, ...,k=2) UseMethod("AIC")
-
-intervals.MSM.lm=function(object,level=0.95,...){
+.intervals.MSM.lm=function(object,level=0.95,...){
 	cat("\nAproximate intervals for the coefficients. Level=",level,"\n")
 	aux=names(object["Coef"])
 	lower=object["Coef"]-qnorm(1-(1-level)/2)*object["seCoef"]
@@ -927,7 +926,11 @@ intervals.MSM.lm=function(object,level=0.95,...){
 		}
 	)
 }
-intervals.MSM.glm=function(object,level=0.95,...){
+setMethod(f="intervals",signature=c("MSM.lm","ANY"),definition=.intervals.MSM.lm)
+
+
+
+.intervals.MSM.glm=function(object,level=0.95,...){
 	cat("\nAproximate intervals for the coefficients. Level=",level,"\n")
 	aux=names(object["Coef"])
 	lower=object["Coef"]-qnorm(1-(1-level)/2)*object["seCoef"]
@@ -943,9 +946,7 @@ intervals.MSM.glm=function(object,level=0.95,...){
 		}
 	)
 }
-intervals <-
-  ## Return the object's value of the Bayesian Information Criterion
-  function(object,level=0.95,...) UseMethod("intervals")
+setMethod(f="intervals",signature=c("MSM.glm","ANY"),definition=.intervals.MSM.glm)
 
 
 #########
