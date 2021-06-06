@@ -710,7 +710,7 @@ setMethod(f="plotProb",signature=c("MSM.linear","ANY"),definition=.MSM.plotProb)
 	z=x["model"]$model[1]
 	apply(as.matrix(1:length(regime)),1,function(j){
 		apply(as.matrix(1:length(x["model"]$model[-1])),1,function(i){
-				a=layout(matrix(c(1,2,1,2),ncol=1,nrow=2),TRUE)
+				a=layout(matrix(c(1,2),ncol=1,nrow=2),TRUE)
 				y=x["Fit"]["smoProb"][-1,regime[j]]
 				v=x["model"]$model[i+1]
 				par(omi=c(0.1,0.01,0.1,0.1))
@@ -748,7 +748,7 @@ setMethod(f="plotReg",signature=c("MSM.linear","missing","ANY"),definition=.MSM.
 	z=x["model"]$model[1]
 	apply(as.matrix(1:length(regime)),1,function(j){
 		apply(as.matrix(1:length(expl)),1,function(i){
-				a=layout(matrix(c(1,2,1,2),ncol=1,nrow=2),TRUE)
+				a=layout(matrix(c(1,2),ncol=1,nrow=2),TRUE)
 				y=x["Fit"]["smoProb"][-1,regime[j]]
 				v=x["model"]$model[expl[i]]
 				par(omi=c(0.1,0.1,0.1,0.1))
